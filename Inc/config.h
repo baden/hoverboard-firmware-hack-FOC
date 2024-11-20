@@ -148,7 +148,7 @@
 
 // Control selections
 #define CTRL_TYP_SEL    FOC_CTRL        // [-] Control type selection: COM_CTRL, SIN_CTRL, FOC_CTRL (default)
-#define CTRL_MOD_REQ    VLT_MODE        // [-] Control mode request: OPEN_MODE, VLT_MODE (default), SPD_MODE, TRQ_MODE. Note: SPD_MODE and TRQ_MODE are only available for CTRL_FOC!
+#define CTRL_MOD_REQ    SPD_MODE        // [-] Control mode request: OPEN_MODE, VLT_MODE (default), SPD_MODE, TRQ_MODE. Note: SPD_MODE and TRQ_MODE are only available for CTRL_FOC!
 #define DIAG_ENA        1               // [-] Motor Diagnostics enable flag: 0 = Disabled, 1 = Enabled (default)
 
 // Limitation settings
@@ -174,7 +174,7 @@
 
 // ############################## DEFAULT SETTINGS ############################
 // Default settings will be applied at the end of this config file if not set before
-#define INACTIVITY_TIMEOUT        8       // Minutes of not driving until poweroff. it is not very precise.
+#define INACTIVITY_TIMEOUT        30      // Minutes of not driving until poweroff. it is not very precise.
 #define BEEPS_BACKWARD            1       // 0 or 1
 #define ADC_MARGIN                100     // ADC input margin applied on the raw ADC min and max to make sure the MIN and MAX values are reached even in the presence of noise
 #define ADC_PROTECT_TIMEOUT       100     // ADC Protection: number of wrong / missing input commands before safety state is taken
@@ -226,6 +226,19 @@
 
 // ######################### END OF CRUISE CONTROL SETTINGS ##########################
 
+
+// ############################## LIMIT CONTROL SETTINGS ############################
+/* Limit Control info:
+  Pull blue or green cable to GND to limit the movement to forward or backward only.
+*/
+
+#define LIMIT_CONTROL_SUPPORT
+#define SUPPORT_BUTTONS_LEFT          // Use input1 (Blue Left cable) to limit movement to forward only
+                                      // Use input2 (Green Left cable) to limit movement to backward only
+// #define SUPPORT_BUTTONS_RIGHT         // Use input1 (Blue Right cable) to limit movement to forward only
+//                                       // Use input2 (Green Right cable) to limit movement to backward only
+
+// ######################### END OF LIMIT CONTROL SETTINGS ##########################
 
 
 // ############################### DEBUG SERIAL ###############################
@@ -404,7 +417,7 @@
   // #define SUPPORT_BUTTONS_LEFT            // use left sensor board cable for button inputs.  Disable DEBUG_SERIAL_USART2!
   // #define SUPPORT_BUTTONS_RIGHT           // use right sensor board cable for button inputs. Disable DEBUG_SERIAL_USART3!
 
-  #if defined(CONTROL_PPM_RIGHT) && !defined(DUAL_INPUTS)
+  #if defined(CONTROL_PPM_RIGHT) && !defined(DUAL_INPUTS) && !defined(LIMIT_CONTROL_SUPPORT)
     #define DEBUG_SERIAL_USART2           // left sensor cable debug
   #elif defined(CONTROL_PPM_LEFT) && !defined(DUAL_INPUTS)
     #define DEBUG_SERIAL_USART3           // right sensor cable debug
@@ -445,7 +458,7 @@
   // #define SUPPORT_BUTTONS_LEFT            // use left sensor board cable for button inputs.  Disable DEBUG_SERIAL_USART2!
   // #define SUPPORT_BUTTONS_RIGHT           // use right sensor board cable for button inputs. Disable DEBUG_SERIAL_USART3!
 
-  #if defined(CONTROL_PWM_RIGHT) && !defined(DUAL_INPUTS)
+  #if defined(CONTROL_PWM_RIGHT) && !defined(DUAL_INPUTS) && !defined(LIMIT_CONTROL_SUPPORT)
     #define DEBUG_SERIAL_USART2           // left sensor cable debug
   #elif defined(CONTROL_PWM_LEFT) && !defined(DUAL_INPUTS)
     #define DEBUG_SERIAL_USART3           // right sensor cable debug
@@ -749,6 +762,9 @@
   #error CONTROL_PPM_LEFT and CONTROL_PWM_LEFT not allowed. It is on the same cable.
 #endif
 
+#if defined(CRUISE_CONTROL_SUPPORT) && defined(LIMIT_CONTROL_SUPPORT)
+  #error CRUISE_CONTROL_SUPPORT and LIMIT_CONTROL_SUPPORT not allowed. Choose one.
+#endif
 
 // RIGHT cable checks
 #if defined(CONTROL_NUNCHUK) && (defined(CONTROL_SERIAL_USART3) || defined(SIDEBOARD_SERIAL_USART3) || defined(FEEDBACK_SERIAL_USART3) || defined(DEBUG_SERIAL_USART3))

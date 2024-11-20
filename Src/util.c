@@ -1081,6 +1081,15 @@ void readCommand(void) {
     #if defined(CRUISE_CONTROL_SUPPORT) && (defined(SUPPORT_BUTTONS) || defined(SUPPORT_BUTTONS_LEFT) || defined(SUPPORT_BUTTONS_RIGHT))
         cruiseControl(button1);                                           // Cruise control activation/deactivation
     #endif
+
+    #if defined(LIMIT_CONTROL_SUPPORT) && (defined(SUPPORT_BUTTONS) || defined(SUPPORT_BUTTONS_LEFT) || defined(SUPPORT_BUTTONS_RIGHT))
+      if(button1) {
+        input2[inIdx].cmd = MAX(input2[inIdx].cmd, 0);    // Enable only forward motion
+      }
+      if(button2) {
+        input2[inIdx].cmd = MIN(input2[inIdx].cmd, 0);    // Enable only backward motion
+      }
+    #endif
 }
 
 
